@@ -15,6 +15,7 @@ use Dotenv\Dotenv;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
 use App\Controllers\ProductController;
+use App\Controllers\SaleController;
 use App\Middlewares\AuthMiddleware;
 
 // Carregar variáveis de ambiente
@@ -100,6 +101,24 @@ $router->get('/api/produtos/barcode/(.*)', function($barcode) {
 $router->get('/api/produtos/qrcode/(.*)', function($sku) {
     $controller = new ProductController();
     $controller->qrcode($sku);
+});
+
+// Módulo de PDV e Vendas
+$router->get('/vendas', function() {
+    $controller = new SaleController();
+    $controller->pdv();
+});
+$router->get('/api/vendas/buscar-produto', function() {
+    $controller = new SaleController();
+    $controller->searchProduct();
+});
+$router->post('/api/vendas/checkout', function() {
+    $controller = new SaleController();
+    $controller->checkout();
+});
+$router->get('/vendas/recibo/(\d+)', function($id) {
+    $controller = new SaleController();
+    $controller->receipt($id);
 });
 
 // API teste
