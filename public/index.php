@@ -16,6 +16,7 @@ use App\Controllers\AuthController;
 use App\Controllers\ClientController;
 use App\Controllers\ProductController;
 use App\Controllers\SaleController;
+use App\Controllers\StoreController;
 use App\Middlewares\AuthMiddleware;
 
 // Carregar variáveis de ambiente
@@ -30,9 +31,16 @@ try {
 $router = new Router();
 
 // Rotas de Autenticação
+// Rotas Públicas (Vitrine)
+$router->get('/', function() {
+    $controller = new StoreController();
+    $controller->index();
+});
+
+// Autenticação Administrativa
 $router->get('/login', function() {
     $controller = new AuthController();
-    $controller->loginView();
+    $controller->showLogin();
 });
 $router->post('/api/auth/login', function() {
     $controller = new AuthController();
@@ -43,17 +51,18 @@ $router->get('/logout', function() {
     $controller->logout();
 });
 
-// Rotas Protegidas
+// Rotas Protegidas (ERP Administrativo)
 $router->before('GET|POST|PUT|DELETE', '/.*', function() {
     // Exceções que não precisam de Auth
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    if (in_array($path, ['/login', '/api/auth/login'])) {
+    if (in_array($path, ['/', '/login', '/api/auth/login']) || strpos($path, '/api/store') === 0) {
         return;
     }
     AuthMiddleware::checkAuth();
 });
 
-$router->get('/', function() {
+// Dashboard ERP
+$router->get('/admin', function() {
     require __DIR__ . '/../app/views/dashboard.php';
 });
 
