@@ -14,6 +14,7 @@ use Bramus\Router\Router;
 use Dotenv\Dotenv;
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
+use App\Controllers\ProductController;
 use App\Middlewares\AuthMiddleware;
 
 // Carregar variáveis de ambiente
@@ -71,6 +72,34 @@ $router->post('/api/clientes', function() {
 $router->delete('/api/clientes/(\d+)', function($id) {
     $controller = new ClientController();
     $controller->delete($id);
+});
+
+// Módulo de Produtos e Estoque
+$router->get('/produtos', function() {
+    $controller = new ProductController();
+    $controller->index();
+});
+$router->get('/api/produtos', function() {
+    $controller = new ProductController();
+    $controller->list();
+});
+$router->post('/api/produtos', function() {
+    $controller = new ProductController();
+    $controller->save();
+});
+$router->delete('/api/produtos/(\d+)', function($id) {
+    $controller = new ProductController();
+    $controller->delete($id);
+});
+
+// Geradores de Códigos (Retornam Imagem)
+$router->get('/api/produtos/barcode/(.*)', function($barcode) {
+    $controller = new ProductController();
+    $controller->barcode($barcode);
+});
+$router->get('/api/produtos/qrcode/(.*)', function($sku) {
+    $controller = new ProductController();
+    $controller->qrcode($sku);
 });
 
 // API teste
