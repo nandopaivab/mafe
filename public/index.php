@@ -12,6 +12,8 @@ if (file_exists($autoloadPath)) {
 
 use Bramus\Router\Router;
 use Dotenv\Dotenv;
+use App\Controllers\AuthController;
+use App\Middlewares\AuthMiddleware;
 
 // Carregar variáveis de ambiente
 try {
@@ -24,7 +26,24 @@ try {
 // Inicializar o Router
 $router = new Router();
 
-// Definir rotas básicas
+// Rotas de Autenticação
+$router->get('/login', function() {
+    $controller = new AuthController();
+    $controller->loginView();
+});
+$router->post('/api/auth/login', function() {
+    $controller = new AuthController();
+    $controller->apiLogin();
+});
+$router->get('/logout', function() {
+    $controller = new AuthController();
+    $controller->logout();
+});
+
+// Rotas Protegidas
+$router->before('GET', '/', function() {
+    AuthMiddleware::checkAuth();
+});
 $router->get('/', function() {
     require __DIR__ . '/../app/views/dashboard.php';
 });
