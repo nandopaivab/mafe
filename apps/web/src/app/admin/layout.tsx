@@ -57,6 +57,12 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/admin/compras" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-pink-700 hover:bg-pink-50 hover:text-pink-900 bg-pink-50/50">
+                    <Package className="h-5 w-5 text-pink-500" />
+                    Compras (Luciana)
+                  </Link>
+                </li>
+                <li>
                   <Link href="/admin/clientes" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-gray-900">
                     <Users className="h-5 w-5 text-gray-400" />
                     Clientes
