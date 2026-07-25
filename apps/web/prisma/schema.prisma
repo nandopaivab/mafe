@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model User {
@@ -59,4 +59,105 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+}
+
+// --- Módulo 4: Gestão de Compras e Curadoria ---
+
+model Supplier {
+  id               String           @id @default(cuid())
+  legalName        String
+  tradeName        String
+  cnpj             String?
+  city             String?
+  state            String?
+  contactName      String?
+  whatsapp         String?
+  instagram        String?
+  website          String?
+  email            String?
+  catalogUrl       String?
+  minOrderQuantity Int?             @default(0)
+  minOrderValue    Float?           @default(0)
+  deliveryTime     String?
+  paymentTerms     String?
+  shippingTerms    String?
+  brands           String?
+  notes            String?
+  rating           Float?           @default(0) // Avaliação baseada em preço, qualidade, etc.
+  curatedProducts  CuratedProduct[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model CuratedProduct {
+  id              String   @id @default(cuid())
+  name            String
+  category        String
+  brand           String?
+  supplierId      String
+  supplier        Supplier @relation(fields: [supplierId], references: [id])
+  ageGroup        String?
+  size            String?
+  color           String?
+  material        String?
+  images          String?  // JSON de URLs
+  videoUrl        String?
+  supplierLink    String?
+  costPrice       Float
+  suggestedPrice  Float
+  estimatedMargin Float    // Cálculo percentual automático
+  competitors     String?  // Nomes ou JSON de concorrentes vendendo o mesmo
+  trendScore      String?  // HIGH, MEDIUM, LOW
+  status          String   @default("ANALYSIS") // ANALYSIS, APPROVED, REJECTED, PURCHASED, NEGOTIATING
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Competitor {
+  id           String   @id @default(cuid())
+  name         String
+  website      String?
+  instagram    String?
+  priceRange   String?
+  productsSold String?
+  promotions   String?
+  strengths    String?
+  weaknesses   String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MarketTrend {
+  id          String   @id @default(cuid())
+  title       String
+  category    String?
+  description String?
+  potential   String   @default("MEDIUM") // HIGH, MEDIUM, LOW
+  references  String?  // Links
+  imageUrls   String?  // JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommercialEvent {
+  id                  String   @id @default(cuid())
+  name                String
+  date                DateTime
+  description         String?
+  recommendedProducts String?
+  status              String   @default("ACTIVE")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model PurchaseTask {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  priority    String   @default("NORMAL") // HIGH, NORMAL, LOW
+  dueDate     DateTime?
+  status      String   @default("TODO") // TODO, IN_PROGRESS, DONE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
