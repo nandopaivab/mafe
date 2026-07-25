@@ -13,6 +13,7 @@ if (file_exists($autoloadPath)) {
 use Bramus\Router\Router;
 use Dotenv\Dotenv;
 use App\Controllers\AuthController;
+use App\Controllers\ClientController;
 use App\Middlewares\AuthMiddleware;
 
 // Carregar variáveis de ambiente
@@ -41,11 +42,35 @@ $router->get('/logout', function() {
 });
 
 // Rotas Protegidas
-$router->before('GET', '/', function() {
+$router->before('GET|POST|PUT|DELETE', '/.*', function() {
+    // Exceções que não precisam de Auth
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (in_array($path, ['/login', '/api/auth/login'])) {
+        return;
+    }
     AuthMiddleware::checkAuth();
 });
+
 $router->get('/', function() {
     require __DIR__ . '/../app/views/dashboard.php';
+});
+
+// Módulo de Clientes
+$router->get('/clientes', function() {
+    $controller = new ClientController();
+    $controller->index();
+});
+$router->get('/api/clientes', function() {
+    $controller = new ClientController();
+    $controller->list();
+});
+$router->post('/api/clientes', function() {
+    $controller = new ClientController();
+    $controller->save();
+});
+$router->delete('/api/clientes/(\d+)', function($id) {
+    $controller = new ClientController();
+    $controller->delete($id);
 });
 
 // API teste
