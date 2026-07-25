@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Upload, Save } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewProductPage() {
 
   const categories = await prisma.category.findMany();
